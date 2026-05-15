@@ -28,8 +28,10 @@ namespace LoginApp
 
             if (email == STUDENT_EMAIL && password == STUDENT_MSSV)
             {
-                MessageBox.Show("Đăng nhập thành công!\nChào mừng: " + email, "Thành công",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Hide();
+                Form2 f2 = new Form2();
+                f2.FormClosed += (s, args) => this.Close();
+                f2.Show();
             }
             else
             {
@@ -47,7 +49,6 @@ namespace LoginApp
 
         private void lblTitle_Click(object sender, EventArgs e)
         {
-
         }
     }
 }
