@@ -22,9 +22,7 @@ namespace LoginApp
             panel1 = new Panel();
             panel1.SuspendLayout();
             SuspendLayout();
-            // 
-            // lblTitle
-            // 
+
             lblTitle.AutoSize = true;
             lblTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
             lblTitle.ForeColor = Color.FromArgb(37, 99, 235);
@@ -35,9 +33,7 @@ namespace LoginApp
             lblTitle.Text = "🔐 ĐĂNG NHẬP HỆ THỐNG";
             lblTitle.TextAlign = ContentAlignment.MiddleCenter;
             lblTitle.Click += lblTitle_Click;
-            // 
-            // lblEmail
-            // 
+
             lblEmail.AutoSize = true;
             lblEmail.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblEmail.ForeColor = Color.FromArgb(55, 65, 81);
@@ -46,9 +42,7 @@ namespace LoginApp
             lblEmail.Size = new Size(134, 23);
             lblEmail.TabIndex = 1;
             lblEmail.Text = "Email sinh viên:";
-            // 
-            // txtEmail
-            // 
+
             txtEmail.BorderStyle = BorderStyle.FixedSingle;
             txtEmail.Font = new Font("Segoe UI", 11F);
             txtEmail.Location = new Point(40, 115);
@@ -56,9 +50,7 @@ namespace LoginApp
             txtEmail.PlaceholderText = "example@student.edu.vn";
             txtEmail.Size = new Size(320, 32);
             txtEmail.TabIndex = 2;
-            // 
-            // lblPassword
-            // 
+
             lblPassword.AutoSize = true;
             lblPassword.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblPassword.ForeColor = Color.FromArgb(55, 65, 81);
@@ -67,9 +59,7 @@ namespace LoginApp
             lblPassword.Size = new Size(155, 23);
             lblPassword.TabIndex = 3;
             lblPassword.Text = "Mật khẩu (MSSV):";
-            // 
-            // txtPassword
-            // 
+
             txtPassword.BorderStyle = BorderStyle.FixedSingle;
             txtPassword.Font = new Font("Segoe UI", 11F);
             txtPassword.Location = new Point(40, 190);
@@ -78,9 +68,7 @@ namespace LoginApp
             txtPassword.PlaceholderText = "Nhập MSSV của bạn";
             txtPassword.Size = new Size(320, 32);
             txtPassword.TabIndex = 4;
-            // 
-            // btnLogin
-            // 
+
             btnLogin.BackColor = Color.FromArgb(37, 99, 235);
             btnLogin.Cursor = Cursors.Hand;
             btnLogin.FlatAppearance.BorderSize = 0;
@@ -94,9 +82,7 @@ namespace LoginApp
             btnLogin.Text = "Đăng nhập";
             btnLogin.UseVisualStyleBackColor = false;
             btnLogin.Click += btnLogin_Click;
-            // 
-            // btnClear
-            // 
+
             btnClear.BackColor = Color.FromArgb(243, 244, 246);
             btnClear.Cursor = Cursors.Hand;
             btnClear.FlatAppearance.BorderColor = Color.FromArgb(209, 213, 219);
@@ -110,9 +96,7 @@ namespace LoginApp
             btnClear.Text = "Xóa";
             btnClear.UseVisualStyleBackColor = false;
             btnClear.Click += btnClear_Click;
-            // 
-            // panel1
-            // 
+
             panel1.BackColor = Color.White;
             panel1.Controls.Add(lblTitle);
             panel1.Controls.Add(lblEmail);
@@ -125,9 +109,7 @@ namespace LoginApp
             panel1.Name = "panel1";
             panel1.Size = new Size(400, 380);
             panel1.TabIndex = 0;
-            // 
-            // Form1
-            // 
+
             BackColor = Color.FromArgb(239, 246, 255);
             ClientSize = new Size(480, 440);
             Controls.Add(panel1);
@@ -141,13 +123,13 @@ namespace LoginApp
             ResumeLayout(false);
         }
 
-        private System.Windows.Forms.Label   lblTitle;
-        private System.Windows.Forms.Label   lblEmail;
+        private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Label lblEmail;
         private System.Windows.Forms.TextBox txtEmail;
-        private System.Windows.Forms.Label   lblPassword;
+        private System.Windows.Forms.Label lblPassword;
         private System.Windows.Forms.TextBox txtPassword;
-        private System.Windows.Forms.Button  btnLogin;
-        private System.Windows.Forms.Button  btnClear;
-        private System.Windows.Forms.Panel   panel1;
+        private System.Windows.Forms.Button btnLogin;
+        private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Panel panel1;
     }
 }

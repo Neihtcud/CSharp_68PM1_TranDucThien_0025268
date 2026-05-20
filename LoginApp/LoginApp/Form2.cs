@@ -31,11 +31,12 @@ namespace LoginApp
         private void LoadLop()
         {
             cboLop.Items.Clear();
-            var lops = danhSach.Select(s => s.Lop).Distinct().OrderBy(l => l).ToList();
+            var lops = Form3.DanhSachLop.Select(l => l.MaLop).OrderBy(l => l).ToList();
             foreach (var l in lops)
-                cboLop.Items.Add(l + " – Lớp " + l);
+                cboLop.Items.Add(l + " \u2013 L\u1edbp " + l);
             if (cboLop.Items.Count > 0) cboLop.SelectedIndex = 0;
         }
+
 
         private void RenderTable()
         {
@@ -173,9 +174,23 @@ namespace LoginApp
 
         private void menuDangXuat_Click(object sender, EventArgs e)
         {
+            var f1 = Application.OpenForms.OfType<Form1>().FirstOrDefault();
+            if (f1 != null) f1.Show();
             this.Close();
-            new Form1().Show();
         }
+
+        private void menuQuanLySV_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void menuQuanLyLop_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            Form3 f3 = new Form3();
+            f3.FormClosed += (s, args) => { if (!this.Visible) this.Close(); };
+            f3.Show();
+        }
+
     }
 
     public class SinhVien

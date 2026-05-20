@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace LoginApp
@@ -30,7 +31,7 @@ namespace LoginApp
             {
                 this.Hide();
                 Form2 f2 = new Form2();
-                f2.FormClosed += (s, args) => this.Close();
+                f2.FormClosed += (s, args) => { if (!this.Visible) this.Close(); };
                 f2.Show();
             }
             else
