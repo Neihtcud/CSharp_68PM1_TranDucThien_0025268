@@ -9,7 +9,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LoginApp
+namespace QuanLySinhVien
 {
 	using System.Data.Linq;
 	using System.Data.Linq.Mapping;
@@ -39,7 +39,7 @@ namespace LoginApp
     #endregion
 		
 		public qlsvDataContext() : 
-				base(global::LoginApp.Properties.Settings.Default.qlsvConnectionString, mappingSource)
+				base(global::QuanLySinhVien.Properties.Settings.Default.qlsvConnectionString1, mappingSource)
 		{
 			OnCreated();
 		}

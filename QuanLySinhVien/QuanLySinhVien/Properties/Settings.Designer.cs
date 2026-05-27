@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LoginApp.Properties {
+namespace QuanLySinhVien.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -31,6 +31,17 @@ namespace LoginApp.Properties {
         public string qlsvConnectionString {
             get {
                 return ((string)(this["qlsvConnectionString"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=TRANTHIEN\\SQLEXPRESS;Initial Catalog=qlsv;Integrated Security=True;En" +
+            "crypt=True;TrustServerCertificate=True")]
+        public string qlsvConnectionString1 {
+            get {
+                return ((string)(this["qlsvConnectionString1"]));
             }
         }
     }

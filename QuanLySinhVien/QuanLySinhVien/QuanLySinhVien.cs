@@ -3,14 +3,14 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace LoginApp
+namespace QuanLySinhVien
 {
-    public partial class Form2 : Form
+    public partial class QuanLySinhVien : Form
     {
         private int currentPage = 1;
         private int pageSize = 10;
 
-        public Form2()
+        public QuanLySinhVien()
         {
             InitializeComponent();
 
@@ -297,7 +297,7 @@ namespace LoginApp
 
         private void menuDangXuat_Click(object sender, EventArgs e)
         {
-            var f1 = Application.OpenForms.OfType<Form1>().FirstOrDefault();
+            var f1 = Application.OpenForms.OfType<Login>().FirstOrDefault();
             if (f1 != null) f1.Show();
             this.Close();
         }
@@ -309,7 +309,7 @@ namespace LoginApp
         private void menuQuanLyLop_Click(object sender, EventArgs e)
         {
             this.Hide();
-            Form3 f3 = new Form3();
+            QuanLyLopHoc f3 = new QuanLyLopHoc();
             f3.FormClosed += (s, args) => { if (!this.Visible) this.Close(); };
             f3.Show();
         }

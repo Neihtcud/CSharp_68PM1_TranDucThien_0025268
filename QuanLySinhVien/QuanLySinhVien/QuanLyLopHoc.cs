@@ -3,16 +3,17 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace LoginApp
+namespace QuanLySinhVien
 {
-    public partial class Form3 : Form
+    public partial class QuanLyLopHoc : Form
     {
         private int currentPage = 1;
         private int pageSize = 10;
 
-        public Form3()
+        public QuanLyLopHoc()
         {
             InitializeComponent();
+
             this.Click += (s, e) => ClearSelectionAndForm();
             grpThongTin.Click += (s, e) => ClearSelectionAndForm();
             dgvLopHoc.MouseClick += (s, e) =>
@@ -23,7 +24,9 @@ namespace LoginApp
                     ClearSelectionAndForm();
                 }
             };
+
             RenderTable();
+            ClearForm();
         }
 
         private void ClearSelectionAndForm()
@@ -107,7 +110,7 @@ namespace LoginApp
             }
 
             RenderTable();
-            ClearForm();
+            ClearSelectionAndForm();
         }
 
         private void btnSua_Click(object sender, EventArgs e)
@@ -115,6 +118,12 @@ namespace LoginApp
             if (dgvLopHoc.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Chọn lớp cần sửa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtMaLop.Text) || string.IsNullOrWhiteSpace(txtTenLop.Text))
+            {
+                MessageBox.Show("Vui lòng nhập Mã lớp và Tên lớp!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -137,7 +146,7 @@ namespace LoginApp
             }
 
             RenderTable();
-            ClearForm();
+            ClearSelectionAndForm();
         }
 
         private void btnXoa_Click(object sender, EventArgs e)
@@ -162,7 +171,7 @@ namespace LoginApp
                     }
                 }
                 RenderTable();
-                ClearForm();
+                ClearSelectionAndForm();
             }
         }
 
@@ -220,14 +229,14 @@ namespace LoginApp
 
         private void menuQuanLySV_Click(object sender, EventArgs e)
         {
-            var f2 = Application.OpenForms.OfType<Form2>().FirstOrDefault();
+            var f2 = Application.OpenForms.OfType<QuanLySinhVien>().FirstOrDefault();
             if (f2 != null) f2.Show();
             this.Close();
         }
 
         private void menuDangXuat_Click(object sender, EventArgs e)
         {
-            var f1 = Application.OpenForms.OfType<Form1>().FirstOrDefault();
+            var f1 = Application.OpenForms.OfType<Login>().FirstOrDefault();
             if (f1 != null) f1.Show();
             this.Close();
         }

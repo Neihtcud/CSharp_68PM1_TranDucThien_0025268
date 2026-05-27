@@ -1,9 +1,9 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace LoginApp
+namespace QuanLySinhVien
 {
-    partial class Form1
+    partial class Login
     {
         private System.ComponentModel.IContainer components = null;
 

@@ -3,14 +3,14 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace LoginApp
+namespace QuanLySinhVien
 {
-    public partial class Form1 : Form
+    public partial class Login : Form
     {
         private const string STUDENT_EMAIL = "0025268@st.huce.edu.vn";
         private const string STUDENT_MSSV = "0025268";
 
-        public Form1()
+        public Login()
         {
             InitializeComponent();
         }
@@ -30,7 +30,7 @@ namespace LoginApp
             if (email == STUDENT_EMAIL && password == STUDENT_MSSV)
             {
                 this.Hide();
-                Form2 f2 = new Form2();
+                QuanLySinhVien f2 = new QuanLySinhVien();
                 f2.FormClosed += (s, args) => { if (!this.Visible) this.Close(); };
                 f2.Show();
             }

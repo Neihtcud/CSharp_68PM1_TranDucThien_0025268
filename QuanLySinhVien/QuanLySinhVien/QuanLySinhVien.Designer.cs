@@ -1,9 +1,9 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace LoginApp
+namespace QuanLySinhVien
 {
-    partial class Form3
+    partial class QuanLySinhVien
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -21,10 +21,16 @@ namespace LoginApp
             menuDangXuat = new ToolStripMenuItem();
 
             grpThongTin = new GroupBox();
-            lblMaLop = new Label();
-            txtMaLop = new TextBox();
-            lblTenLop = new Label();
-            txtTenLop = new TextBox();
+            lblMaSV = new Label();
+            txtMaSV = new TextBox();
+            lblHoTen = new Label();
+            txtHoTen = new TextBox();
+            lblNgaySinh = new Label();
+            dtpNgaySinh = new DateTimePicker();
+            lblGioiTinh = new Label();
+            cboGioiTinh = new ComboBox();
+            lblLop = new Label();
+            cboLop = new ComboBox();
 
             btnThem = new Button();
             btnSua = new Button();
@@ -34,7 +40,7 @@ namespace LoginApp
             lblSearchTitle = new Label();
             txtSearch = new TextBox();
             btnTim = new Button();
-            dgvLopHoc = new DataGridView();
+            dgvSinhVien = new DataGridView();
             lblPage = new Label();
             btnFirst = new Button();
             btnPrev = new Button();
@@ -43,48 +49,82 @@ namespace LoginApp
 
             menuStrip1.SuspendLayout();
             grpThongTin.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvLopHoc).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvSinhVien).BeginInit();
             SuspendLayout();
 
             menuStrip1.Items.AddRange(new ToolStripItem[] { menuQuanLySV, menuQuanLyLop, menuDangXuat });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1100, 24);
+            menuStrip1.Text = "Quản lý Sinh Viên";
             menuStrip1.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
 
             menuQuanLySV.Text = "Quản lý Sinh Viên";
-            menuQuanLySV.Click += menuQuanLySV_Click;
             menuQuanLyLop.Text = "Quản lý Lớp Học";
             menuDangXuat.Text = "Đăng xuất";
             menuDangXuat.ForeColor = Color.FromArgb(220, 38, 38);
             menuDangXuat.Click += menuDangXuat_Click;
+            menuQuanLySV.Click += menuQuanLySV_Click;
+            menuQuanLyLop.Click += menuQuanLyLop_Click;
 
-            grpThongTin.Text = "Thông tin lớp học";
+            grpThongTin.Text = "Thông tin sinh viên";
             grpThongTin.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             grpThongTin.Location = new Point(12, 30);
             grpThongTin.Size = new Size(430, 580);
-            grpThongTin.Controls.AddRange(new Control[] { lblMaLop, txtMaLop, lblTenLop, txtTenLop });
+            grpThongTin.Controls.AddRange(new Control[] { lblMaSV, txtMaSV, lblHoTen, txtHoTen, lblNgaySinh, dtpNgaySinh, lblGioiTinh, cboGioiTinh, lblLop, cboLop });
 
-            lblMaLop.Text = "Mã lớp:";
-            lblMaLop.Location = new Point(15, 30);
-            lblMaLop.AutoSize = true;
-            lblMaLop.Font = new Font("Segoe UI", 9F);
+            lblMaSV.Text = "Mã sinh viên:";
+            lblMaSV.Location = new Point(15, 30);
+            lblMaSV.AutoSize = true;
+            lblMaSV.Font = new Font("Segoe UI", 9F);
 
-            txtMaLop.Location = new Point(15, 52);
-            txtMaLop.Size = new Size(395, 27);
-            txtMaLop.BorderStyle = BorderStyle.FixedSingle;
-            txtMaLop.Font = new Font("Segoe UI", 10F);
-            txtMaLop.BackColor = Color.FromArgb(219, 234, 254);
+            txtMaSV.Location = new Point(15, 52);
+            txtMaSV.Size = new Size(395, 27);
+            txtMaSV.BorderStyle = BorderStyle.FixedSingle;
+            txtMaSV.Font = new Font("Segoe UI", 10F);
+            txtMaSV.BackColor = Color.FromArgb(219, 234, 254);
 
-            lblTenLop.Text = "Tên lớp:";
-            lblTenLop.Location = new Point(15, 95);
-            lblTenLop.AutoSize = true;
-            lblTenLop.Font = new Font("Segoe UI", 9F);
+            lblHoTen.Text = "Họ và tên:";
+            lblHoTen.Location = new Point(15, 95);
+            lblHoTen.AutoSize = true;
+            lblHoTen.Font = new Font("Segoe UI", 9F);
 
-            txtTenLop.Location = new Point(15, 117);
-            txtTenLop.Size = new Size(395, 27);
-            txtTenLop.BorderStyle = BorderStyle.FixedSingle;
-            txtTenLop.Font = new Font("Segoe UI", 10F);
+            txtHoTen.Location = new Point(15, 117);
+            txtHoTen.Size = new Size(395, 27);
+            txtHoTen.BorderStyle = BorderStyle.FixedSingle;
+            txtHoTen.Font = new Font("Segoe UI", 10F);
+
+            lblNgaySinh.Text = "Ngày sinh:";
+            lblNgaySinh.Location = new Point(15, 160);
+            lblNgaySinh.AutoSize = true;
+            lblNgaySinh.Font = new Font("Segoe UI", 9F);
+
+            dtpNgaySinh.Location = new Point(15, 182);
+            dtpNgaySinh.Size = new Size(395, 27);
+            dtpNgaySinh.Font = new Font("Segoe UI", 10F);
+            dtpNgaySinh.Format = DateTimePickerFormat.Short;
+
+            lblGioiTinh.Text = "Giới tính:";
+            lblGioiTinh.Location = new Point(15, 225);
+            lblGioiTinh.AutoSize = true;
+            lblGioiTinh.Font = new Font("Segoe UI", 9F);
+
+            cboGioiTinh.Location = new Point(15, 247);
+            cboGioiTinh.Size = new Size(395, 27);
+            cboGioiTinh.Font = new Font("Segoe UI", 10F);
+            cboGioiTinh.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboGioiTinh.Items.AddRange(new object[] { "Nam", "Nữ", "Khác" });
+            cboGioiTinh.SelectedIndex = 0;
+
+            lblLop.Text = "Lớp:";
+            lblLop.Location = new Point(15, 290);
+            lblLop.AutoSize = true;
+            lblLop.Font = new Font("Segoe UI", 9F);
+
+            cboLop.Location = new Point(15, 312);
+            cboLop.Size = new Size(395, 27);
+            cboLop.Font = new Font("Segoe UI", 10F);
+            cboLop.DropDownStyle = ComboBoxStyle.DropDownList;
 
             btnThem.Text = "Thêm";
             btnThem.Location = new Point(12, 625);
@@ -130,7 +170,7 @@ namespace LoginApp
             btnLamMoi.Cursor = Cursors.Hand;
             btnLamMoi.Click += btnLamMoi_Click;
 
-            lblSearchTitle.Text = "Tìm kiếm (Mã lớp / Tên lớp):";
+            lblSearchTitle.Text = "Tìm kiếm (Tên / Mã SV / Lớp):";
             lblSearchTitle.Location = new Point(460, 38);
             lblSearchTitle.AutoSize = true;
             lblSearchTitle.Font = new Font("Segoe UI", 9F);
@@ -151,25 +191,28 @@ namespace LoginApp
             btnTim.Cursor = Cursors.Hand;
             btnTim.Click += btnTim_Click;
 
-            dgvLopHoc.Location = new Point(460, 105);
-            dgvLopHoc.Size = new Size(620, 560);
-            dgvLopHoc.AllowUserToAddRows = false;
-            dgvLopHoc.AllowUserToDeleteRows = false;
-            dgvLopHoc.ReadOnly = true;
-            dgvLopHoc.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvLopHoc.MultiSelect = false;
-            dgvLopHoc.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvLopHoc.BackgroundColor = Color.White;
-            dgvLopHoc.BorderStyle = BorderStyle.Fixed3D;
-            dgvLopHoc.Font = new Font("Segoe UI", 9F);
-            dgvLopHoc.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            dgvLopHoc.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(243, 244, 246);
-            dgvLopHoc.EnableHeadersVisualStyles = false;
-            dgvLopHoc.RowTemplate.Height = 28;
-            dgvLopHoc.GridColor = Color.FromArgb(229, 231, 235);
-            dgvLopHoc.Columns.Add("MaLop", "Mã Lớp");
-            dgvLopHoc.Columns.Add("TenLop", "Tên Lớp");
-            dgvLopHoc.SelectionChanged += dgvLopHoc_SelectionChanged;
+            dgvSinhVien.Location = new Point(460, 105);
+            dgvSinhVien.Size = new Size(620, 560);
+            dgvSinhVien.AllowUserToAddRows = false;
+            dgvSinhVien.AllowUserToDeleteRows = false;
+            dgvSinhVien.ReadOnly = true;
+            dgvSinhVien.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvSinhVien.MultiSelect = false;
+            dgvSinhVien.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvSinhVien.BackgroundColor = Color.White;
+            dgvSinhVien.BorderStyle = BorderStyle.Fixed3D;
+            dgvSinhVien.Font = new Font("Segoe UI", 9F);
+            dgvSinhVien.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dgvSinhVien.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(243, 244, 246);
+            dgvSinhVien.EnableHeadersVisualStyles = false;
+            dgvSinhVien.RowTemplate.Height = 28;
+            dgvSinhVien.GridColor = Color.FromArgb(229, 231, 235);
+            dgvSinhVien.Columns.Add("MaSV", "Mã SV");
+            dgvSinhVien.Columns.Add("HoTen", "Họ và Tên");
+            dgvSinhVien.Columns.Add("GioiTinh", "Giới Tính");
+            dgvSinhVien.Columns.Add("NgaySinh", "Ngày Sinh");
+            dgvSinhVien.Columns.Add("Lop", "Lớp");
+            dgvSinhVien.SelectionChanged += dgvSinhVien_SelectionChanged;
 
             btnFirst.Text = "<<";
             btnFirst.Location = new Point(460, 680);
@@ -211,13 +254,13 @@ namespace LoginApp
             BackColor = Color.FromArgb(249, 250, 251);
             ClientSize = new Size(1100, 750);
             MainMenuStrip = menuStrip1;
-            Text = "Quản lý Lớp Học";
+            Text = "Quản lý Sinh Viên";
             StartPosition = FormStartPosition.CenterScreen;
             Controls.AddRange(new Control[] {
                 menuStrip1, grpThongTin,
                 btnThem, btnSua, btnXoa, btnLamMoi,
                 lblSearchTitle, txtSearch, btnTim,
-                dgvLopHoc,
+                dgvSinhVien,
                 btnFirst, btnPrev, lblPage, btnNext, btnLast
             });
 
@@ -225,7 +268,7 @@ namespace LoginApp
             menuStrip1.PerformLayout();
             grpThongTin.ResumeLayout(false);
             grpThongTin.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvLopHoc).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvSinhVien).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -235,10 +278,16 @@ namespace LoginApp
         private ToolStripMenuItem menuQuanLyLop;
         private ToolStripMenuItem menuDangXuat;
         private GroupBox grpThongTin;
-        private Label lblMaLop;
-        private TextBox txtMaLop;
-        private Label lblTenLop;
-        private TextBox txtTenLop;
+        private Label lblMaSV;
+        private TextBox txtMaSV;
+        private Label lblHoTen;
+        private TextBox txtHoTen;
+        private Label lblNgaySinh;
+        private DateTimePicker dtpNgaySinh;
+        private Label lblGioiTinh;
+        private ComboBox cboGioiTinh;
+        private Label lblLop;
+        private ComboBox cboLop;
         private Button btnThem;
         private Button btnSua;
         private Button btnXoa;
@@ -246,7 +295,7 @@ namespace LoginApp
         private Label lblSearchTitle;
         private TextBox txtSearch;
         private Button btnTim;
-        private DataGridView dgvLopHoc;
+        private DataGridView dgvSinhVien;
         private Label lblPage;
         private Button btnFirst;
         private Button btnPrev;
