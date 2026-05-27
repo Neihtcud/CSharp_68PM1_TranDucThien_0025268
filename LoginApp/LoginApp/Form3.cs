@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -8,44 +7,64 @@ namespace LoginApp
 {
     public partial class Form3 : Form
     {
-        public static List<LopHoc> DanhSachLop = new List<LopHoc>
-        {
-            new LopHoc { MaLop = "68PM1", TenLop = "Kỹ thuật phần mềm 1" },
-            new LopHoc { MaLop = "68PM2", TenLop = "Kỹ thuật phần mềm 2" },
-        };
-
         private int currentPage = 1;
         private int pageSize = 10;
-        private List<LopHoc> filtered = new List<LopHoc>();
 
         public Form3()
         {
             InitializeComponent();
+            this.Click += (s, e) => ClearSelectionAndForm();
+            grpThongTin.Click += (s, e) => ClearSelectionAndForm();
+            dgvLopHoc.MouseClick += (s, e) =>
+            {
+                var hit = dgvLopHoc.HitTest(e.X, e.Y);
+                if (hit.Type == DataGridViewHitTestType.None)
+                {
+                    ClearSelectionAndForm();
+                }
+            };
             RenderTable();
+        }
+
+        private void ClearSelectionAndForm()
+        {
+            dgvLopHoc.ClearSelection();
+            ClearForm();
         }
 
         private void RenderTable()
         {
-            string kw = txtSearch.Text.Trim().ToLower();
-            filtered = string.IsNullOrEmpty(kw)
-                ? DanhSachLop.ToList()
-                : DanhSachLop.Where(l =>
-                    l.MaLop.ToLower().Contains(kw) ||
-                    l.TenLop.ToLower().Contains(kw)).ToList();
+            using (var db = new qlsvDataContext())
+            {
+                string kw = txtSearch.Text.Trim().ToLower();
+                var query = db.tbl_lophocs.AsQueryable();
 
-            int total = filtered.Count;
-            int totalPages = Math.Max(1, (int)Math.Ceiling(total / (double)pageSize));
-            if (currentPage > totalPages) currentPage = totalPages;
+                if (!string.IsNullOrEmpty(kw))
+                {
+                    query = query.Where(l =>
+                        l.malop.ToLower().Contains(kw) ||
+                        l.tenlop.ToLower().Contains(kw));
+                }
 
-            var pageData = filtered.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+                int total = query.Count();
+                int totalPages = Math.Max(1, (int)Math.Ceiling(total / (double)pageSize));
+                if (currentPage > totalPages) currentPage = totalPages;
 
-            dgvLopHoc.Rows.Clear();
-            foreach (var l in pageData)
-                dgvLopHoc.Rows.Add(l.MaLop, l.TenLop);
+                var pageData = query.OrderBy(l => l.id)
+                                    .Skip((currentPage - 1) * pageSize)
+                                    .Take(pageSize)
+                                    .ToList();
 
-            lblPage.Text = $"Trang {currentPage}/{totalPages}  |  {total} bản ghi";
-            btnFirst.Enabled = btnPrev.Enabled = currentPage > 1;
-            btnNext.Enabled = btnLast.Enabled = currentPage < totalPages;
+                dgvLopHoc.Rows.Clear();
+                foreach (var l in pageData)
+                {
+                    dgvLopHoc.Rows.Add(l.malop, l.tenlop);
+                }
+
+                lblPage.Text = $"Trang {currentPage}/{totalPages}  |  {total} bản ghi";
+                btnFirst.Enabled = btnPrev.Enabled = currentPage > 1;
+                btnNext.Enabled = btnLast.Enabled = currentPage < totalPages;
+            }
         }
 
         private void ClearForm()
@@ -68,12 +87,25 @@ namespace LoginApp
                 MessageBox.Show("Vui lòng nhập Mã lớp và Tên lớp!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (DanhSachLop.Any(l => l.MaLop == txtMaLop.Text.Trim()))
+
+            using (var db = new qlsvDataContext())
             {
-                MessageBox.Show("Mã lớp đã tồn tại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                if (db.tbl_lophocs.Any(l => l.malop == txtMaLop.Text.Trim()))
+                {
+                    MessageBox.Show("Mã lớp đã tồn tại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                var lophoc = new tbl_lophoc
+                {
+                    malop = txtMaLop.Text.Trim(),
+                    tenlop = txtTenLop.Text.Trim()
+                };
+
+                db.tbl_lophocs.InsertOnSubmit(lophoc);
+                db.SubmitChanges();
             }
-            DanhSachLop.Add(new LopHoc { MaLop = txtMaLop.Text.Trim(), TenLop = txtTenLop.Text.Trim() });
+
             RenderTable();
             ClearForm();
         }
@@ -85,10 +117,25 @@ namespace LoginApp
                 MessageBox.Show("Chọn lớp cần sửa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             string maLop = dgvLopHoc.SelectedRows[0].Cells[0].Value?.ToString();
-            var lop = DanhSachLop.FirstOrDefault(l => l.MaLop == maLop);
-            if (lop == null) return;
-            lop.TenLop = txtTenLop.Text.Trim();
+
+            using (var db = new qlsvDataContext())
+            {
+                var lop = db.tbl_lophocs.FirstOrDefault(l => l.malop == maLop);
+                if (lop == null) return;
+
+                if (maLop != txtMaLop.Text.Trim() && db.tbl_lophocs.Any(l => l.malop == txtMaLop.Text.Trim()))
+                {
+                    MessageBox.Show("Mã lớp mới đã tồn tại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                lop.tenlop = txtTenLop.Text.Trim();
+                lop.malop = txtMaLop.Text.Trim();
+                db.SubmitChanges();
+            }
+
             RenderTable();
             ClearForm();
         }
@@ -100,10 +147,20 @@ namespace LoginApp
                 MessageBox.Show("Chọn lớp cần xóa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             string maLop = dgvLopHoc.SelectedRows[0].Cells[0].Value?.ToString();
+
             if (MessageBox.Show("Xác nhận xóa lớp này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                DanhSachLop.RemoveAll(l => l.MaLop == maLop);
+                using (var db = new qlsvDataContext())
+                {
+                    var lop = db.tbl_lophocs.FirstOrDefault(l => l.malop == maLop);
+                    if (lop != null)
+                    {
+                        db.tbl_lophocs.DeleteOnSubmit(lop);
+                        db.SubmitChanges();
+                    }
+                }
                 RenderTable();
                 ClearForm();
             }
@@ -111,26 +168,53 @@ namespace LoginApp
 
         private void btnLamMoi_Click(object sender, EventArgs e)
         {
-            ClearForm();
+            ClearSelectionAndForm();
         }
 
         private void dgvLopHoc_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvLopHoc.SelectedRows.Count == 0) return;
             var row = dgvLopHoc.SelectedRows[0];
-            string maLop = row.Cells[0].Value?.ToString();
-            var lop = DanhSachLop.FirstOrDefault(l => l.MaLop == maLop);
-            if (lop == null) return;
-            txtMaLop.Text = lop.MaLop;
-            txtTenLop.Text = lop.TenLop;
+            txtMaLop.Text = row.Cells[0].Value?.ToString();
+            txtTenLop.Text = row.Cells[1].Value?.ToString();
         }
 
-        private void btnFirst_Click(object sender, EventArgs e) { currentPage = 1; RenderTable(); }
-        private void btnPrev_Click(object sender, EventArgs e) { if (currentPage > 1) { currentPage--; RenderTable(); } }
-        private void btnNext_Click(object sender, EventArgs e) { currentPage++; RenderTable(); }
+        private void btnFirst_Click(object sender, EventArgs e)
+        {
+            currentPage = 1;
+            RenderTable();
+        }
+
+        private void btnPrev_Click(object sender, EventArgs e)
+        {
+            if (currentPage > 1)
+            {
+                currentPage--;
+                RenderTable();
+            }
+        }
+
+        private void btnNext_Click(object sender, EventArgs e)
+        {
+            currentPage++;
+            RenderTable();
+        }
+
         private void btnLast_Click(object sender, EventArgs e)
         {
-            currentPage = Math.Max(1, (int)Math.Ceiling(filtered.Count / (double)pageSize));
+            using (var db = new qlsvDataContext())
+            {
+                string kw = txtSearch.Text.Trim().ToLower();
+                var query = db.tbl_lophocs.AsQueryable();
+                if (!string.IsNullOrEmpty(kw))
+                {
+                    query = query.Where(l =>
+                        l.malop.ToLower().Contains(kw) ||
+                        l.tenlop.ToLower().Contains(kw));
+                }
+                int total = query.Count();
+                currentPage = Math.Max(1, (int)Math.Ceiling(total / (double)pageSize));
+            }
             RenderTable();
         }
 
@@ -147,11 +231,5 @@ namespace LoginApp
             if (f1 != null) f1.Show();
             this.Close();
         }
-    }
-
-    public class LopHoc
-    {
-        public string MaLop { get; set; }
-        public string TenLop { get; set; }
     }
 }

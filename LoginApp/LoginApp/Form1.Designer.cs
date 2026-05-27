@@ -1,3 +1,6 @@
+using System.Drawing;
+using System.Windows.Forms;
+
 namespace LoginApp
 {
     partial class Form1
@@ -47,7 +50,6 @@ namespace LoginApp
             txtEmail.Font = new Font("Segoe UI", 11F);
             txtEmail.Location = new Point(40, 115);
             txtEmail.Name = "txtEmail";
-            txtEmail.PlaceholderText = "example@student.edu.vn";
             txtEmail.Size = new Size(320, 32);
             txtEmail.TabIndex = 2;
 
@@ -65,7 +67,6 @@ namespace LoginApp
             txtPassword.Location = new Point(40, 190);
             txtPassword.Name = "txtPassword";
             txtPassword.PasswordChar = '*';
-            txtPassword.PlaceholderText = "Nhập MSSV của bạn";
             txtPassword.Size = new Size(320, 32);
             txtPassword.TabIndex = 4;
 

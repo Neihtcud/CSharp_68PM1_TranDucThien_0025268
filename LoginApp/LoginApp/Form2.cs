@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -8,68 +7,101 @@ namespace LoginApp
 {
     public partial class Form2 : Form
     {
-        private List<SinhVien> danhSach = new List<SinhVien>();
         private int currentPage = 1;
         private int pageSize = 10;
-        private List<SinhVien> filtered = new List<SinhVien>();
 
         public Form2()
         {
             InitializeComponent();
-            LoadSampleData();
+
+            this.Click += (s, e) => ClearSelectionAndForm();
+            grpThongTin.Click += (s, e) => ClearSelectionAndForm();
+            dgvSinhVien.MouseClick += (s, e) =>
+            {
+                var hit = dgvSinhVien.HitTest(e.X, e.Y);
+                if (hit.Type == DataGridViewHitTestType.None)
+                {
+                    ClearSelectionAndForm();
+                }
+            };
+
+            dtpNgaySinh.ValueChanged += (s, e) =>
+            {
+                dtpNgaySinh.Format = DateTimePickerFormat.Short;
+            };
+
             LoadLop();
             RenderTable();
+            ClearForm();
         }
 
-        private void LoadSampleData()
+        private void ClearSelectionAndForm()
         {
-            danhSach.Add(new SinhVien { MaSV = "1", HoTen = "hieu", GioiTinh = "Nam", NgaySinh = new DateTime(2026, 3, 11), Lop = "68PM1" });
-            danhSach.Add(new SinhVien { MaSV = "2", HoTen = "Nguyễn Văn B", GioiTinh = "Nam", NgaySinh = new DateTime(2026, 3, 11), Lop = "68PM2" });
-            danhSach.Add(new SinhVien { MaSV = "3", HoTen = "Trần Văn C", GioiTinh = "Nam", NgaySinh = new DateTime(2026, 3, 21), Lop = "68PM2" });
+            dgvSinhVien.ClearSelection();
+            ClearForm();
         }
 
         private void LoadLop()
         {
-            cboLop.Items.Clear();
-            var lops = Form3.DanhSachLop.Select(l => l.MaLop).OrderBy(l => l).ToList();
-            foreach (var l in lops)
-                cboLop.Items.Add(l + " \u2013 L\u1edbp " + l);
-            if (cboLop.Items.Count > 0) cboLop.SelectedIndex = 0;
+            using (var db = new qlsvDataContext())
+            {
+                cboLop.Items.Clear();
+                var lops = db.tbl_lophocs.Select(l => l.malop).OrderBy(l => l).ToList();
+                foreach (var l in lops)
+                {
+                    cboLop.Items.Add(l + " – Lớp " + l);
+                }
+            }
         }
-
 
         private void RenderTable()
         {
-            string keyword = txtSearch.Text.Trim().ToLower();
-            filtered = string.IsNullOrEmpty(keyword)
-                ? danhSach.ToList()
-                : danhSach.Where(s =>
-                    s.HoTen.ToLower().Contains(keyword) ||
-                    s.MaSV.ToLower().Contains(keyword) ||
-                    s.Lop.ToLower().Contains(keyword)).ToList();
+            using (var db = new qlsvDataContext())
+            {
+                string keyword = txtSearch.Text.Trim().ToLower();
+                var query = db.tbl_sinhviens.AsQueryable();
 
-            int total = filtered.Count;
-            int totalPages = Math.Max(1, (int)Math.Ceiling(total / (double)pageSize));
-            if (currentPage > totalPages) currentPage = totalPages;
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    query = query.Where(s =>
+                        s.hoten.ToLower().Contains(keyword) ||
+                        s.id.ToString().ToLower().Contains(keyword) ||
+                        s.malop.ToLower().Contains(keyword));
+                }
 
-            var pageData = filtered.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+                int total = query.Count();
+                int totalPages = Math.Max(1, (int)Math.Ceiling(total / (double)pageSize));
+                if (currentPage > totalPages) currentPage = totalPages;
 
-            dgvSinhVien.Rows.Clear();
-            foreach (var sv in pageData)
-                dgvSinhVien.Rows.Add(sv.MaSV, sv.HoTen, sv.GioiTinh, sv.NgaySinh.ToString("dd/MM/yyyy"), sv.Lop);
+                var pageData = query.OrderBy(s => s.id)
+                                    .Skip((currentPage - 1) * pageSize)
+                                    .Take(pageSize)
+                                    .ToList();
 
-            lblPage.Text = $"Trang {currentPage}/{totalPages}  |  {total} bản ghi";
-            btnFirst.Enabled = btnPrev.Enabled = currentPage > 1;
-            btnNext.Enabled = btnLast.Enabled = currentPage < totalPages;
+                dgvSinhVien.Rows.Clear();
+                foreach (var sv in pageData)
+                {
+                    string ngaySinh = sv.ngaysinh.HasValue ? sv.ngaysinh.Value.ToString("dd/MM/yyyy") : "";
+                    dgvSinhVien.Rows.Add(sv.id.ToString(), sv.hoten, sv.gioitinh, ngaySinh, sv.malop);
+                }
+
+                lblPage.Text = $"Trang {currentPage}/{totalPages}  |  {total} bản ghi";
+                btnFirst.Enabled = btnPrev.Enabled = currentPage > 1;
+                btnNext.Enabled = btnLast.Enabled = currentPage < totalPages;
+            }
         }
 
         private void ClearForm()
         {
             txtMaSV.Clear();
             txtHoTen.Clear();
-            dtpNgaySinh.Value = DateTime.Today;
-            cboGioiTinh.SelectedIndex = 0;
-            if (cboLop.Items.Count > 0) cboLop.SelectedIndex = 0;
+
+            cboGioiTinh.SelectedIndex = -1;
+            cboLop.SelectedIndex = -1;
+
+            dtpNgaySinh.Format = DateTimePickerFormat.Custom;
+            dtpNgaySinh.CustomFormat = " ";
+
             txtMaSV.Focus();
         }
 
@@ -81,28 +113,48 @@ namespace LoginApp
 
         private void btnThem_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtMaSV.Text) || string.IsNullOrWhiteSpace(txtHoTen.Text))
+            if (string.IsNullOrWhiteSpace(txtMaSV.Text) ||
+                string.IsNullOrWhiteSpace(txtHoTen.Text) ||
+                cboGioiTinh.SelectedIndex == -1 ||
+                cboLop.SelectedIndex == -1 ||
+                dtpNgaySinh.CustomFormat == " ")
             {
-                MessageBox.Show("Vui lòng nhập Mã SV và Họ tên!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng nhập đầy đủ thông tin!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (danhSach.Any(s => s.MaSV == txtMaSV.Text.Trim()))
+
+            if (!int.TryParse(txtMaSV.Text.Trim(), out int id))
             {
-                MessageBox.Show("Mã sinh viên đã tồn tại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Mã sinh viên (Id) phải là số nguyên!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            string lopText = cboLop.Text.Contains("–") ? cboLop.Text.Split('–')[0].Trim() : cboLop.Text.Trim();
-            danhSach.Add(new SinhVien
+
+            using (var db = new qlsvDataContext())
             {
-                MaSV = txtMaSV.Text.Trim(),
-                HoTen = txtHoTen.Text.Trim(),
-                GioiTinh = cboGioiTinh.Text,
-                NgaySinh = dtpNgaySinh.Value,
-                Lop = lopText
-            });
+                if (db.tbl_sinhviens.Any(s => s.id == id))
+                {
+                    MessageBox.Show("Mã sinh viên đã tồn tại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                string lopText = cboLop.Text.Contains("–") ? cboLop.Text.Split('–')[0].Trim() : cboLop.Text.Trim();
+
+                var sv = new tbl_sinhvien
+                {
+                    id = id,
+                    hoten = txtHoTen.Text.Trim(),
+                    gioitinh = cboGioiTinh.Text,
+                    ngaysinh = dtpNgaySinh.Value,
+                    malop = lopText
+                };
+
+                db.tbl_sinhviens.InsertOnSubmit(sv);
+                db.SubmitChanges();
+            }
+
             LoadLop();
             RenderTable();
-            ClearForm();
+            ClearSelectionAndForm();
         }
 
         private void btnSua_Click(object sender, EventArgs e)
@@ -112,17 +164,37 @@ namespace LoginApp
                 MessageBox.Show("Chọn sinh viên cần sửa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            string maSV = dgvSinhVien.SelectedRows[0].Cells[0].Value?.ToString();
-            var sv = danhSach.FirstOrDefault(s => s.MaSV == maSV);
-            if (sv == null) return;
-            string lopText = cboLop.Text.Contains("–") ? cboLop.Text.Split('–')[0].Trim() : cboLop.Text.Trim();
-            sv.HoTen = txtHoTen.Text.Trim();
-            sv.GioiTinh = cboGioiTinh.Text;
-            sv.NgaySinh = dtpNgaySinh.Value;
-            sv.Lop = lopText;
+
+            if (string.IsNullOrWhiteSpace(txtMaSV.Text) ||
+                string.IsNullOrWhiteSpace(txtHoTen.Text) ||
+                cboGioiTinh.SelectedIndex == -1 ||
+                cboLop.SelectedIndex == -1 ||
+                dtpNgaySinh.CustomFormat == " ")
+            {
+                MessageBox.Show("Vui lòng nhập đầy đủ thông tin!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(dgvSinhVien.SelectedRows[0].Cells[0].Value?.ToString(), out int id)) return;
+
+            using (var db = new qlsvDataContext())
+            {
+                var sv = db.tbl_sinhviens.FirstOrDefault(s => s.id == id);
+                if (sv == null) return;
+
+                string lopText = cboLop.Text.Contains("–") ? cboLop.Text.Split('–')[0].Trim() : cboLop.Text.Trim();
+
+                sv.hoten = txtHoTen.Text.Trim();
+                sv.gioitinh = cboGioiTinh.Text;
+                sv.ngaysinh = dtpNgaySinh.Value;
+                sv.malop = lopText;
+
+                db.SubmitChanges();
+            }
+
             LoadLop();
             RenderTable();
-            ClearForm();
+            ClearSelectionAndForm();
         }
 
         private void btnXoa_Click(object sender, EventArgs e)
@@ -132,43 +204,94 @@ namespace LoginApp
                 MessageBox.Show("Chọn sinh viên cần xóa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            string maSV = dgvSinhVien.SelectedRows[0].Cells[0].Value?.ToString();
+
+            if (!int.TryParse(dgvSinhVien.SelectedRows[0].Cells[0].Value?.ToString(), out int id)) return;
+
             if (MessageBox.Show("Xác nhận xóa sinh viên này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                danhSach.RemoveAll(s => s.MaSV == maSV);
+                using (var db = new qlsvDataContext())
+                {
+                    var sv = db.tbl_sinhviens.FirstOrDefault(s => s.id == id);
+                    if (sv != null)
+                    {
+                        db.tbl_sinhviens.DeleteOnSubmit(sv);
+                        db.SubmitChanges();
+                    }
+                }
                 LoadLop();
                 RenderTable();
-                ClearForm();
+                ClearSelectionAndForm();
             }
         }
 
         private void btnLamMoi_Click(object sender, EventArgs e)
         {
-            ClearForm();
+            ClearSelectionAndForm();
         }
 
         private void dgvSinhVien_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvSinhVien.SelectedRows.Count == 0) return;
+
             var row = dgvSinhVien.SelectedRows[0];
-            string maSV = row.Cells[0].Value?.ToString();
-            var sv = danhSach.FirstOrDefault(s => s.MaSV == maSV);
-            if (sv == null) return;
-            txtMaSV.Text = sv.MaSV;
-            txtHoTen.Text = sv.HoTen;
-            dtpNgaySinh.Value = sv.NgaySinh;
-            cboGioiTinh.Text = sv.GioiTinh;
-            string target = sv.Lop + " – Lớp " + sv.Lop;
+            txtMaSV.Text = row.Cells[0].Value?.ToString();
+            txtHoTen.Text = row.Cells[1].Value?.ToString();
+            cboGioiTinh.Text = row.Cells[2].Value?.ToString();
+
+            if (DateTime.TryParseExact(row.Cells[3].Value?.ToString(), "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime date))
+            {
+                dtpNgaySinh.Format = DateTimePickerFormat.Short;
+                dtpNgaySinh.Value = date;
+            }
+            else
+            {
+                dtpNgaySinh.Format = DateTimePickerFormat.Custom;
+                dtpNgaySinh.CustomFormat = " ";
+            }
+
+            string lop = row.Cells[4].Value?.ToString();
+            string target = lop + " – Lớp " + lop;
             int idx = cboLop.Items.IndexOf(target);
-            if (idx >= 0) cboLop.SelectedIndex = idx;
+            cboLop.SelectedIndex = idx;
         }
 
-        private void btnFirst_Click(object sender, EventArgs e) { currentPage = 1; RenderTable(); }
-        private void btnPrev_Click(object sender, EventArgs e) { if (currentPage > 1) { currentPage--; RenderTable(); } }
-        private void btnNext_Click(object sender, EventArgs e) { currentPage++; RenderTable(); }
+        private void btnFirst_Click(object sender, EventArgs e)
+        {
+            currentPage = 1;
+            RenderTable();
+        }
+
+        private void btnPrev_Click(object sender, EventArgs e)
+        {
+            if (currentPage > 1)
+            {
+                currentPage--;
+                RenderTable();
+            }
+        }
+
+        private void btnNext_Click(object sender, EventArgs e)
+        {
+            currentPage++;
+            RenderTable();
+        }
+
         private void btnLast_Click(object sender, EventArgs e)
         {
-            currentPage = Math.Max(1, (int)Math.Ceiling(filtered.Count / (double)pageSize));
+            using (var db = new qlsvDataContext())
+            {
+                string keyword = txtSearch.Text.Trim().ToLower();
+                var query = db.tbl_sinhviens.AsQueryable();
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    query = query.Where(s =>
+                        s.hoten.ToLower().Contains(keyword) ||
+                        s.id.ToString().ToLower().Contains(keyword) ||
+                        s.malop.ToLower().Contains(keyword));
+                }
+                int total = query.Count();
+                currentPage = Math.Max(1, (int)Math.Ceiling(total / (double)pageSize));
+            }
             RenderTable();
         }
 
@@ -190,15 +313,5 @@ namespace LoginApp
             f3.FormClosed += (s, args) => { if (!this.Visible) this.Close(); };
             f3.Show();
         }
-
-    }
-
-    public class SinhVien
-    {
-        public string MaSV { get; set; }
-        public string HoTen { get; set; }
-        public string GioiTinh { get; set; }
-        public DateTime NgaySinh { get; set; }
-        public string Lop { get; set; }
     }
 }
